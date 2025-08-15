@@ -24,6 +24,7 @@ export default function Signup() {
     setLoading(true);
     setError('');
 
+    // Client-side validation
     if (password !== confirmPassword) {
       setError('Passwords do not match');
       setLoading(false);
@@ -36,15 +37,20 @@ export default function Signup() {
       return;
     }
 
-    const { error } = await signUp(email, password);
+    try {
+      const { error } = await signUp(email, password);
 
-    if (error) {
-      setError(error.message);
-    } else {
-      setSuccess(true);
+      if (error) {
+        setError(error.message);
+        setLoading(false);
+      } else {
+        setSuccess(true);
+        // Loading will be cleared when success state triggers re-render
+      }
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   if (success) {

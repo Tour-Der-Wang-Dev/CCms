@@ -17,6 +17,7 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Pricing from './pages/Pricing';
 import Success from './pages/Success';
+import AuthCallback from './pages/AuthCallback';
 
 function App() {
   return (

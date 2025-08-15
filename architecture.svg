@@ -1,0 +1,30 @@
+<!--
+    This file is a placeholder for the SVG architecture diagram.
+    Please use a diagramming tool (e.g., draw.io, Lucidchart, Excalidraw, or a code-to-diagram tool like Mermaid.live)
+    to generate an SVG based on the detailed description in `architecture.md`.
+
+    Example Mermaid code for `architecture.md` can be pasted here if a tool supports direct Mermaid SVG export.
+    For instance, if using Mermaid.live, you would paste the generated SVG code here.
+
+    A simple representation might look like this:
+
+    <svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+        <rect x="50" y="50" width="200" height="100" fill="#ADD8E6" stroke="#333" stroke-width="2" />
+        <text x="150" y="105" font-family="Arial" font-size="16" text-anchor="middle">Frontend (React)</text>
+
+        <rect x="300" y="50" width="200" height="100" fill="#90EE90" stroke="#333" stroke-width="2" />
+        <text x="400" y="105" font-family="Arial" font-size="16" text-anchor="middle">Backend (Supabase)</text>
+
+        <rect x="550" y="50" width="200" height="100" fill="#FFD700" stroke="#333" stroke-width="2" />
+        <text x="650" y="105" font-family="Arial" font-size="16" text-anchor="middle">External APIs</text>
+
+        <line x1="250" y1="100" x2="300" y2="100" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)" />
+        <line x1="500" y1="100" x2="550" y2="100" stroke="#333" stroke-width="2" marker-end="url(#arrowhead)" />
+
+        <defs>
+            <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="0" refY="3.5" orient="auto">
+                <polygon points="0 0, 10 3.5, 0 7" fill="#333" />
+            </marker>
+        </defs>
+    </svg>
+-->

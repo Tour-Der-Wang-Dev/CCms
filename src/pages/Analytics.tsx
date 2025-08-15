@@ -6,6 +6,7 @@ import ChannelAnalytics from '../components/analytics/ChannelAnalytics';
 import PlanningInsights from '../components/analytics/PlanningInsights';
 import SocialAnalytics from '../components/analytics/SocialAnalytics';
 import PlatformBreakdown from '../components/analytics/PlatformBreakdown';
+import AyrshareOnboarding from '../components/analytics/AyrshareOnboarding';
 
 const Analytics = () => {
   const [timeRange, setTimeRange] = useState('30d');
@@ -172,7 +173,8 @@ const Analytics = () => {
           <ChannelAnalytics />
         </div>
 
-        <div>
+        <div className="space-y-8">
+          <AyrshareOnboarding />
           <PlanningInsights />
         </div>
       </div>

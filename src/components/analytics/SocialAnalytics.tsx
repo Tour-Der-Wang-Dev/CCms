@@ -126,6 +126,20 @@ const SocialAnalytics: React.FC<SocialAnalyticsProps> = ({ timeRange }) => {
 
   return (
     <div className="space-y-6">
+      {import.meta.env.DEV && !analytics && (
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+          <div className="flex items-center space-x-2">
+            <RefreshCw className="w-4 h-4 text-blue-500" />
+            <div className="text-sm">
+              <p className="text-blue-700 font-medium">Demo Analytics</p>
+              <p className="text-blue-600">
+                Showing sample data. Configure Ayrshare integration for live social media analytics.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Overview Metrics */}
       <div className="bg-white rounded-2xl p-6 shadow-soft border border-neutral-100">
         <div className="flex items-center justify-between mb-6">

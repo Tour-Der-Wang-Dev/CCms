@@ -126,6 +126,18 @@ const SocialAccountManager = () => {
         </div>
       )}
 
+      {import.meta.env.DEV && (
+        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-xl flex items-center space-x-2">
+          <ExternalLink className="w-4 h-4 text-blue-500 flex-shrink-0" />
+          <div className="text-sm">
+            <p className="text-blue-700 font-medium">Development Mode</p>
+            <p className="text-blue-600 mt-1">
+              Social media features are running in demo mode. Connect your Ayrshare API key to enable live functionality.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {accounts.map((account) => (
           <div

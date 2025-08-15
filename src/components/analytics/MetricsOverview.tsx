@@ -110,6 +110,23 @@ const MetricsOverview: React.FC<MetricsOverviewProps> = ({ timeRange }) => {
     },
   ];
 
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="bg-white rounded-xl p-6 shadow-soft border border-neutral-100 animate-pulse">
+            <div className="flex items-center justify-between mb-4">
+              <div className="w-10 h-10 bg-neutral-200 rounded-xl"></div>
+              <div className="w-16 h-4 bg-neutral-200 rounded"></div>
+            </div>
+            <div className="w-20 h-8 bg-neutral-200 rounded mb-1"></div>
+            <div className="w-16 h-4 bg-neutral-200 rounded"></div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       {metrics.map((metric, index) => (

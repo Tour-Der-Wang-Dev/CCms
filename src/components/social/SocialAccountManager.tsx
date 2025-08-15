@@ -257,23 +257,58 @@ const SocialAccountManager = () => {
         })}
       </div>
 
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-xl">
-        <div className="flex items-start space-x-2">
-          <ExternalLink className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
-          <div className="text-sm">
-            <p className="text-blue-700 font-medium">Need help connecting accounts?</p>
-            <p className="text-blue-600 mt-1">
-              Visit your{' '}
-              <a
-                href="https://app.ayrshare.com/dashboard"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:no-underline"
-              >
-                Ayrshare dashboard
-              </a>{' '}
-              to manage social media connections and API settings.
-            </p>
+      {/* Connection Guidelines */}
+      <div className="mt-6 space-y-4">
+        <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
+          <div className="flex items-start space-x-2">
+            <Info className="w-4 h-4 text-blue-500 flex-shrink-0 mt-0.5" />
+            <div className="text-sm">
+              <p className="text-blue-700 font-medium">Connection Guidelines</p>
+              <ul className="text-blue-600 mt-2 space-y-1">
+                {AYRSHARE_CONFIG.authorizationNotes.map((note, index) => (
+                  <li key={index} className="flex items-start space-x-2">
+                    <span className="w-1 h-1 bg-blue-500 rounded-full mt-2 flex-shrink-0"></span>
+                    <span>{note}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+          <div className="flex items-start space-x-2">
+            <HelpCircle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
+            <div className="text-sm">
+              <p className="text-amber-700 font-medium">Platform-Specific Tips</p>
+              <div className="text-amber-600 mt-2 space-y-2">
+                <p><strong>Facebook & Instagram:</strong> You may be asked to choose which Page or account to connect.</p>
+                <p><strong>X (Twitter):</strong> If the wrong account is linked, switch accounts in X and re-link.</p>
+                <p><strong>LinkedIn:</strong> Choose between personal profile or company page connection.</p>
+                <p><strong>YouTube:</strong> Requires Google account authorization for video uploads.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-xl">
+          <div className="flex items-start space-x-2">
+            <ExternalLink className="w-4 h-4 text-neutral-500 flex-shrink-0 mt-0.5" />
+            <div className="text-sm">
+              <p className="text-neutral-700 font-medium">Need Additional Help?</p>
+              <p className="text-neutral-600 mt-1">
+                Visit your{' '}
+                <a
+                  href="https://app.ayrshare.com/dashboard"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sage underline hover:no-underline"
+                >
+                  Ayrshare dashboard
+                </a>{' '}
+                to manage connections, view detailed platform guides, or contact support.
+              </p>
+            </div>
           </div>
         </div>
       </div>

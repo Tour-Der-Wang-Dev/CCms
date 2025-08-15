@@ -1,41 +1,110 @@
-import React from 'react';
-import { TrendingUp, TrendingDown, Eye, Heart, MessageCircle, Share } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { TrendingUp, TrendingDown, Eye, Heart, MessageCircle, Share, BarChart3, MousePointer } from 'lucide-react';
+import { ayrshareService } from '../../services/ayrshareService';
 
 interface MetricsOverviewProps {
   timeRange: string;
 }
 
 const MetricsOverview: React.FC<MetricsOverviewProps> = ({ timeRange }) => {
+  const [analyticsData, setAnalyticsData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadMetrics();
+  }, [timeRange]);
+
+  const loadMetrics = async () => {
+    try {
+      setLoading(true);
+
+      // Calculate date range
+      const endDate = new Date();
+      const startDate = new Date();
+
+      switch (timeRange) {
+        case '7d':
+          startDate.setDate(endDate.getDate() - 7);
+          break;
+        case '30d':
+          startDate.setDate(endDate.getDate() - 30);
+          break;
+        case '90d':
+          startDate.setDate(endDate.getDate() - 90);
+          break;
+        case '1y':
+          startDate.setFullYear(endDate.getFullYear() - 1);
+          break;
+      }
+
+      const analytics = await ayrshareService.getAnalytics({
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+      });
+
+      setAnalyticsData(analytics);
+    } catch (error) {
+      console.error('Error loading metrics:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatNumber = (num: number) => {
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toString();
+  };
+
+  const calculateChange = (current: number, previous: number) => {
+    if (previous === 0) return current > 0 ? 100 : 0;
+    return ((current - previous) / previous * 100);
+  };
+
+  // Use mock data if no real data available
+  const data = analyticsData || {
+    totalViews: 24800,
+    totalLikes: 1240,
+    totalComments: 234,
+    totalShares: 156,
+    totalImpressions: 45600,
+    engagementRate: 4.2,
+    clickThroughRate: 2.1,
+    previousPeriod: {
+      totalViews: 22100,
+      totalLikes: 1180,
+      totalComments: 198,
+      totalShares: 134,
+      engagementRate: 3.8
+    }
+  };
+
   const metrics = [
     {
       label: 'Total Views',
-      value: '24.8K',
-      change: '+12.5%',
-      trend: 'up',
+      value: formatNumber(data.totalViews),
+      change: calculateChange(data.totalViews, data.previousPeriod?.totalViews || 0),
       icon: Eye,
       color: 'text-warm-blue',
     },
     {
       label: 'Engagement Rate',
-      value: '4.2%',
-      change: '+0.8%',
-      trend: 'up',
+      value: `${data.engagementRate.toFixed(1)}%`,
+      change: calculateChange(data.engagementRate, data.previousPeriod?.engagementRate || 0),
       icon: Heart,
       color: 'text-muted-rose',
     },
     {
       label: 'Comments',
-      value: '1.2K',
-      change: '-2.1%',
-      trend: 'down',
+      value: formatNumber(data.totalComments),
+      change: calculateChange(data.totalComments, data.previousPeriod?.totalComments || 0),
       icon: MessageCircle,
       color: 'text-soft-emerald',
     },
     {
       label: 'Shares',
-      value: '892',
-      change: '+18.3%',
-      trend: 'up',
+      value: formatNumber(data.totalShares),
+      change: calculateChange(data.totalShares, data.previousPeriod?.totalShares || 0),
       icon: Share,
       color: 'text-dusty-purple',
     },

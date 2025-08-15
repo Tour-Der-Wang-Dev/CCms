@@ -1,23 +1,59 @@
 import { supabase } from '../lib/supabase';
 
-// Mock data for development/fallback scenarios
+// Enhanced mock data based on Ayrshare's unified API structure
 const MOCK_DATA = {
   connectedAccounts: {
-    profiles: []
+    profiles: [
+      { platform: 'facebook', username: 'demo_page', profileKey: 'fb_demo', verified: true },
+      { platform: 'instagram', username: 'demo_insta', profileKey: 'ig_demo', verified: true },
+      { platform: 'x', username: 'demo_x', profileKey: 'x_demo', verified: true }
+    ]
   },
   postHistory: {
-    posts: []
+    posts: [
+      {
+        id: 'demo_post_1',
+        post: 'Check out our new product launch! 🚀',
+        platforms: ['facebook', 'instagram', 'x'],
+        postDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+        numViews: 2450,
+        numLikes: 89,
+        numComments: 12,
+        numShares: 15
+      },
+      {
+        id: 'demo_post_2',
+        post: 'Behind the scenes at our office today 📸',
+        platforms: ['instagram', 'linkedin'],
+        postDate: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString(),
+        numViews: 1820,
+        numLikes: 156,
+        numComments: 8,
+        numShares: 22
+      }
+    ]
   },
   analytics: {
-    summary: {
-      totalViews: 0,
-      totalEngagement: 0,
-      totalLikes: 0,
-      totalComments: 0,
-      totalShares: 0,
-      engagementRate: 0,
-      previousViews: 0,
-      previousEngagement: 0,
+    totalPosts: 24,
+    totalViews: 24800,
+    totalLikes: 1240,
+    totalComments: 234,
+    totalShares: 156,
+    totalImpressions: 45600,
+    engagementRate: 4.2,
+    clickThroughRate: 2.1,
+    platformBreakdown: {
+      facebook: { posts: 8, views: 8900, likes: 445, comments: 89, shares: 67 },
+      instagram: { posts: 12, views: 12400, likes: 678, comments: 123, shares: 45 },
+      x: { posts: 6, views: 2300, likes: 89, comments: 15, shares: 23 },
+      linkedin: { posts: 4, views: 1200, likes: 28, comments: 7, shares: 21 }
+    },
+    previousPeriod: {
+      totalViews: 22100,
+      totalLikes: 1180,
+      totalComments: 198,
+      totalShares: 134,
+      engagementRate: 3.8
     }
   }
 };

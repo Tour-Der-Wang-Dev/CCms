@@ -25,5 +25,3 @@ This document outlines the core technologies and specific library usage guidelin
 *   **Drag and Drop**: Implement drag-and-drop features using `react-dnd` and `react-dnd-html5-backend`.
 *   **Date Operations**: For any date parsing, formatting, or manipulation, use the `date-fns` library.
 *   **Social Media Integration**: Interact with social media platforms for publishing and analytics exclusively through the `ayrshareService` (`src/services/ayrshareService.ts`).
-
-Directory names MUST be all lower-case (src/pages, src/components, etc.). File names may use mixed-case if you like.

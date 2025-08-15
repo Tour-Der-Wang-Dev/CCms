@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "social-media-api": "npm:social-media-api@^1.2.6"
+  }
+}

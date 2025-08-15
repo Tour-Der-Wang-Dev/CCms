@@ -1,7 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { corsHeaders } from '../_shared/cors.ts'
-
-const AYRSHARE_API_URL = 'https://app.ayrshare.com/api'
+// @deno-types="npm:@types/node"
+import SocialPost from "social-media-api"
 
 serve(async (req) => {
   // Handle CORS preflight requests
@@ -11,88 +11,66 @@ serve(async (req) => {
 
   try {
     const { action, ...params } = await req.json()
-    
+
     // Get Ayrshare API key from environment
     const apiKey = Deno.env.get('AYRSHARE_API_KEY')
     if (!apiKey) {
       throw new Error('AYRSHARE_API_KEY not configured')
     }
 
-    const headers = {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    }
+    // Initialize the official Ayrshare SDK
+    const social = new SocialPost(apiKey)
 
-    let response
-    let endpoint = ''
-    let method = 'GET'
-    let body = null
+    let result
 
-    // Route actions to appropriate Ayrshare API endpoints
+    // Route actions to appropriate SDK methods
     switch (action) {
       case 'getConnectedAccounts':
-        endpoint = '/profiles'
+        result = await social.getProfiles()
         break
-        
+
       case 'generateAuthUrl':
-        endpoint = '/generate-jwt'
-        method = 'POST'
-        body = JSON.stringify({
+        result = await social.generateJWT({
           domain: req.headers.get('origin') || 'localhost',
           platforms: [params.platform]
         })
         break
-        
+
       case 'createPost':
-        endpoint = '/post'
-        method = 'POST'
-        body = JSON.stringify(params.postData)
+        result = await social.post(params.postData)
         break
-        
+
       case 'getPostHistory':
         const limit = params.params?.limit || 20
-        endpoint = `/history?lastRecords=${limit}`
+        result = await social.getHistory({ lastRecords: limit })
         break
-        
+
       case 'deletePost':
-        endpoint = `/delete/${params.postId}`
-        method = 'DELETE'
+        result = await social.deletePost(params.postId)
         break
-        
+
       case 'getAnalytics':
         const { startDate, endDate } = params.params
-        endpoint = `/analytics?startDate=${startDate}&endDate=${endDate}`
-        break
-        
-      case 'uploadMedia':
-        endpoint = '/upload'
-        method = 'POST'
-        body = JSON.stringify({
-          file: params.file,
-          fileName: params.fileName,
-          fileType: params.fileType
+        result = await social.getAnalytics({
+          startDate,
+          endDate
         })
         break
-        
+
+      case 'uploadMedia':
+        result = await social.upload({
+          file: params.file,
+          fileName: params.fileName,
+          description: `Uploaded via ContentFlow: ${params.fileName}`
+        })
+        break
+
       default:
         throw new Error(`Unsupported action: ${action}`)
     }
 
-    // Make request to Ayrshare API
-    const ayrshareResponse = await fetch(`${AYRSHARE_API_URL}${endpoint}`, {
-      method,
-      headers,
-      body
-    })
-
-    const data = await ayrshareResponse.json()
-
-    if (!ayrshareResponse.ok) {
-      throw new Error(data.message || `Ayrshare API error: ${ayrshareResponse.status}`)
-    }
-
     return new Response(
-      JSON.stringify(data),
+      JSON.stringify(result),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
@@ -101,15 +79,30 @@ serve(async (req) => {
 
   } catch (error) {
     console.error('Ayrshare proxy error:', error)
-    
+
+    // Enhanced error handling with specific error types
+    const status = error.response?.status || 500
+    const errorResponse = {
+      error: error.message || 'Unknown error occurred',
+      status,
+      action,
+      timestamp: new Date().toISOString()
+    }
+
+    // Log additional details for debugging
+    if (error.response) {
+      console.error('Ayrshare API Response:', {
+        status: error.response.status,
+        statusText: error.response.statusText,
+        data: error.response.data
+      })
+    }
+
     return new Response(
-      JSON.stringify({
-        error: error.message,
-        details: 'Failed to send a request to the Edge Function'
-      }),
+      JSON.stringify(errorResponse),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500,
+        status: status >= 400 && status < 600 ? status : 500,
       },
     )
   }

@@ -1,14 +1,4 @@
-// Official Ayrshare SDK implementation
-import SocialPost from 'social-media-api';
-import type {
-  PostData,
-  PostResponse,
-  ProfileData,
-  HistoryResponse,
-  AnalyticsResponse,
-  UploadResponse,
-  JWTResponse
-} from '../types/ayrshare';
+import { supabase } from '../lib/supabase';
 
 // Enhanced mock data for development/fallback scenarios
 const MOCK_DATA = {

@@ -87,9 +87,12 @@ const AyrshareOnboarding = () => {
                   <div className="flex items-start space-x-2">
                     <Code className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
                     <div className="text-sm">
-                      <p className="text-amber-800 font-medium">Environment Variable Required</p>
+                      <p className="text-amber-800 font-medium">Official SDK Configuration</p>
                       <p className="text-amber-700 mt-1">
-                        Set <code className="bg-amber-100 px-1 rounded">AYRSHARE_API_KEY</code> in your environment variables to enable live social media functionality.
+                        Set <code className="bg-amber-100 px-1 rounded">VITE_AYRSHARE_API_KEY</code> or <code className="bg-amber-100 px-1 rounded">AYRSHARE_API_KEY</code> in your environment variables to enable the official Ayrshare SDK.
+                      </p>
+                      <p className="text-amber-600 text-xs mt-1">
+                        ✨ Now using the official social-media-api SDK for enhanced reliability and features!
                       </p>
                     </div>
                   </div>

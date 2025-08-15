@@ -139,14 +139,14 @@ const MetricsOverview: React.FC<MetricsOverviewProps> = ({ timeRange }) => {
               <metric.icon className={`w-5 h-5 ${metric.color}`} />
             </div>
             <div className={`flex items-center space-x-1 text-sm font-medium ${
-              metric.trend === 'up' ? 'text-emerald-600' : 'text-red-500'
+              metric.change >= 0 ? 'text-emerald-600' : 'text-red-500'
             }`}>
-              {metric.trend === 'up' ? (
+              {metric.change >= 0 ? (
                 <TrendingUp className="w-4 h-4" />
               ) : (
                 <TrendingDown className="w-4 h-4" />
               )}
-              <span>{metric.change}</span>
+              <span>{metric.change >= 0 ? '+' : ''}{metric.change.toFixed(1)}%</span>
             </div>
           </div>
           

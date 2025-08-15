@@ -23,13 +23,19 @@ export default function Login() {
     setLoading(true);
     setError('');
 
-    const { error } = await signIn(email, password);
+    try {
+      const { error } = await signIn(email, password);
 
-    if (error) {
-      setError(error.message);
+      if (error) {
+        setError(error.message);
+        setLoading(false);
+      }
+      // Success: AuthContext will handle navigation via useEffect
+      // Loading state will be cleared by AuthContext state change
+    } catch (err) {
+      setError('An unexpected error occurred. Please try again.');
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

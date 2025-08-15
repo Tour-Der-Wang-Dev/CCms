@@ -5,6 +5,7 @@ import ContentPerformance from '../components/analytics/ContentPerformance';
 import ChannelAnalytics from '../components/analytics/ChannelAnalytics';
 import PlanningInsights from '../components/analytics/PlanningInsights';
 import SocialAnalytics from '../components/analytics/SocialAnalytics';
+import PlatformBreakdown from '../components/analytics/PlatformBreakdown';
 
 const Analytics = () => {
   const [timeRange, setTimeRange] = useState('30d');
@@ -59,10 +60,11 @@ const Analytics = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
         <div className="lg:col-span-2 space-y-8">
           <SocialAnalytics timeRange={timeRange} />
+          <PlatformBreakdown timeRange={timeRange} />
           <ContentPerformance />
           <ChannelAnalytics />
         </div>
-        
+
         <div>
           <PlanningInsights />
         </div>

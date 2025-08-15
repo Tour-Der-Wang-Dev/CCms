@@ -1,5 +1,14 @@
 // Official Ayrshare SDK implementation
-const SocialPost = require('social-media-api');
+import SocialPost from 'social-media-api';
+import type {
+  PostData,
+  PostResponse,
+  ProfileData,
+  HistoryResponse,
+  AnalyticsResponse,
+  UploadResponse,
+  JWTResponse
+} from '../types/ayrshare';
 
 // Enhanced mock data for development/fallback scenarios
 const MOCK_DATA = {
@@ -56,7 +65,7 @@ const MOCK_DATA = {
 };
 
 // Initialize the official Ayrshare SDK
-const getAyrshareClient = () => {
+const getAyrshareClient = (): SocialPost | null => {
   const apiKey = import.meta.env.VITE_AYRSHARE_API_KEY || process.env.AYRSHARE_API_KEY;
 
   if (!apiKey) {

@@ -5,6 +5,7 @@ import { HTML5Backend } from 'react-dnd-html5-backend';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Navigation from './components/Navigation';
+import { DebugEnv } from './debug-env';
 
 // Lazy load pages to reduce initial bundle size
 const Dashboard = React.lazy(() => import('./pages/Dashboard'));
@@ -34,6 +35,7 @@ function App() {
       <DndProvider backend={HTML5Backend}>
         <Router>
           <div className="min-h-screen bg-cream">
+            <DebugEnv />
             <Suspense fallback={<PageLoader />}>
               <Routes>
                 {/* Public routes */}

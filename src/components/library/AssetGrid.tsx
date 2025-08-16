@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { memo, useCallback, useMemo } from 'react';
 import { FileText, Image, Video, File, MoreHorizontal, Download, Star } from 'lucide-react';
 
-const AssetGrid = () => {
-  const assets = [
+const AssetGrid = memo(() => {
+  const assets = useMemo(() => [
     {
       id: 1,
       name: 'Product Launch Blog Post.docx',
@@ -63,18 +63,19 @@ const AssetGrid = () => {
       thumbnail: null,
       starred: false,
     },
-  ];
+  ], []);
 
-  const handleDownload = (asset: any) => {
+  const handleDownload = useCallback((asset: any) => {
     console.log('Downloading asset:', asset.name);
     // Implement download logic
-  };
+  }, []);
 
-  const handleStar = (assetId: number) => {
+  const handleStar = useCallback((assetId: number) => {
     console.log('Toggling star for asset:', assetId);
     // Implement star toggle logic
-  };
-  const getTypeIcon = (type: string) => {
+  }, []);
+
+  const getTypeIcon = useCallback((type: string) => {
     switch (type) {
       case 'document':
         return <FileText className="w-8 h-8 text-warm-blue" />;
@@ -87,7 +88,7 @@ const AssetGrid = () => {
       default:
         return <File className="w-8 h-8 text-neutral-500" />;
     }
-  };
+  }, []);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -103,6 +104,7 @@ const AssetGrid = () => {
                 src={asset.thumbnail}
                 alt={asset.name}
                 className="w-full h-full object-cover"
+                loading="lazy"
               />
             ) : (
               <div className="flex items-center justify-center">
@@ -153,6 +155,8 @@ const AssetGrid = () => {
       ))}
     </div>
   );
-};
+});
+
+AssetGrid.displayName = 'AssetGrid';
 
 export default AssetGrid;

@@ -1,5 +1,6 @@
 import React, { memo, useCallback, useMemo } from 'react';
 import { FileText, Image, Video, File, MoreHorizontal, Download, Star } from 'lucide-react';
+import OptimizedImage from '../ui/OptimizedImage';
 
 const AssetGrid = memo(() => {
   const assets = useMemo(() => [

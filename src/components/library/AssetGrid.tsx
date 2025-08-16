@@ -101,11 +101,13 @@ const AssetGrid = memo(() => {
           {/* Thumbnail */}
           <div className="aspect-video bg-neutral-50 flex items-center justify-center relative overflow-hidden">
             {asset.thumbnail ? (
-              <img
+              <OptimizedImage
                 src={asset.thumbnail}
                 alt={asset.name}
                 className="w-full h-full object-cover"
                 loading="lazy"
+                width={400}
+                height={300}
               />
             ) : (
               <div className="flex items-center justify-center">

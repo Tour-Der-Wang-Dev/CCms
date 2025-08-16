@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { cachedRequest, apiCache, debounce } from '../lib/cache';
 
 // Enhanced mock data based on Ayrshare's unified API structure
 const MOCK_DATA = {
@@ -70,9 +71,28 @@ const handleServiceError = (error: any, action: string, fallbackData?: any) => {
   throw new Error(error.message || `Failed to ${action}`);
 };
 
+// Debounced analytics request
+const debouncedAnalyticsRequest = debounce(async (params: { startDate: string; endDate: string }) => {
+  const cacheKey = `analytics_${params.startDate}_${params.endDate}`;
+  
+  return cachedRequest(cacheKey, async () => {
+    const { data, error } = await supabase.functions.invoke('ayrshare-proxy', {
+      body: { action: 'getAnalytics', params },
+    });
+
+    if (error) {
+      return handleServiceError(error, 'get analytics', MOCK_DATA.analytics);
+    }
+
+    return data;
+  }, 10 * 60 * 1000); // Cache for 10 minutes
+}, 300);
+
 export const ayrshareService = {
   async getConnectedAccounts() {
-    try {
+    const cacheKey = 'connected_accounts';
+    
+    return cachedRequest(cacheKey, async () => {
       const { data, error } = await supabase.functions.invoke('ayrshare-proxy', {
         body: { action: 'getConnectedAccounts' },
       });
@@ -82,12 +102,11 @@ export const ayrshareService = {
       }
 
       return data;
-    } catch (error) {
-      return handleServiceError(error, 'get connected accounts', MOCK_DATA.connectedAccounts);
-    }
+    }, 5 * 60 * 1000); // Cache for 5 minutes
   },
 
   async generateAuthUrl(platform: string) {
+    // Don't cache auth URLs as they should be fresh
     try {
       const { data, error } = await supabase.functions.invoke('ayrshare-proxy', {
         body: { action: 'generateAuthUrl', platform },
@@ -96,6 +115,9 @@ export const ayrshareService = {
       if (error) {
         return handleServiceError(error, 'generate auth URL', { url: null });
       }
+
+      // Invalidate connected accounts cache when generating auth URLs
+      apiCache.invalidate('connected_accounts');
 
       return data;
     } catch (error) {
@@ -113,14 +135,20 @@ export const ayrshareService = {
         return handleServiceError(error, 'create post', { id: 'mock-post-id', status: 'success' });
       }
 
+      // Invalidate relevant caches after posting
+      apiCache.invalidate('post_history');
+      apiCache.invalidate('analytics');
+
       return data;
     } catch (error) {
       return handleServiceError(error, 'create post', { id: 'mock-post-id', status: 'success' });
     }
   },
 
-  async getPostHistory(params: { limit?: number }) {
-    try {
+  async getPostHistory(params: { limit?: number } = {}) {
+    const cacheKey = `post_history_${params.limit || 50}`;
+    
+    return cachedRequest(cacheKey, async () => {
       const { data, error } = await supabase.functions.invoke('ayrshare-proxy', {
         body: { action: 'getPostHistory', params },
       });
@@ -130,9 +158,7 @@ export const ayrshareService = {
       }
 
       return data;
-    } catch (error) {
-      return handleServiceError(error, 'get post history', MOCK_DATA.postHistory);
-    }
+    }, 2 * 60 * 1000); // Cache for 2 minutes
   },
 
   async deletePost(postId: string) {
@@ -145,6 +171,10 @@ export const ayrshareService = {
         return handleServiceError(error, 'delete post', { success: true });
       }
 
+      // Invalidate caches after deletion
+      apiCache.invalidate('post_history');
+      apiCache.invalidate('analytics');
+
       return data;
     } catch (error) {
       return handleServiceError(error, 'delete post', { success: true });
@@ -152,23 +182,14 @@ export const ayrshareService = {
   },
 
   async getAnalytics(params: { startDate: string; endDate: string }) {
-    try {
-      const { data, error } = await supabase.functions.invoke('ayrshare-proxy', {
-        body: { action: 'getAnalytics', params },
-      });
-
-      if (error) {
-        return handleServiceError(error, 'get analytics', MOCK_DATA.analytics);
-      }
-
-      return data;
-    } catch (error) {
-      return handleServiceError(error, 'get analytics', MOCK_DATA.analytics);
-    }
+    // Use debounced request to prevent rapid successive calls
+    return debouncedAnalyticsRequest(params);
   },
 
   async uploadMedia(file: File) {
-    try {
+    const cacheKey = `media_${file.name}_${file.size}_${file.lastModified}`;
+    
+    return cachedRequest(cacheKey, async () => {
       const reader = new FileReader();
       const base64File = await new Promise<string>((resolve, reject) => {
         reader.onloadend = () => resolve(reader.result as string);
@@ -185,8 +206,19 @@ export const ayrshareService = {
       }
 
       return data;
-    } catch (error) {
-      return handleServiceError(error, 'upload media', { url: 'mock-media-url' });
-    }
+    }, 60 * 60 * 1000); // Cache media uploads for 1 hour
   },
+
+  // Cache management utilities
+  clearCache() {
+    apiCache.clear();
+  },
+
+  invalidateCache(pattern?: string) {
+    if (pattern) {
+      apiCache.invalidate(pattern);
+    } else {
+      apiCache.clear();
+    }
+  }
 };

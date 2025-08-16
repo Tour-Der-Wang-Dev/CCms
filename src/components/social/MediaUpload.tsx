@@ -1,6 +1,7 @@
 import React, { memo, useCallback, useRef } from 'react';
 import { Image, Video, FileText, X, Upload } from 'lucide-react';
 import OptimizedImage from '../ui/OptimizedImage';
+import { useObjectUrls } from '../../hooks/useCleanup';
 
 interface MediaUploadProps {
   mediaFiles: File[];

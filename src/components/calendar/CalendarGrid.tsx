@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo, useMemo, useCallback } from 'react';
 import { useDrop } from 'react-dnd';
 import { format, addDays, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
 
@@ -8,10 +8,10 @@ interface CalendarGridProps {
   onDateClick?: (date: Date) => void;
 }
 
-const CalendarGrid: React.FC<CalendarGridProps> = ({ view, currentDate, onDateClick }) => {
+const CalendarGrid = memo<CalendarGridProps>(({ view, currentDate, onDateClick }) => {
   const [draggedContent, setDraggedContent] = useState<any>(null);
 
-  const getDaysInMonth = (date: Date) => {
+  const getDaysInMonth = useCallback((date: Date) => {
     const year = date.getFullYear();
     const month = date.getMonth();
     const firstDay = new Date(year, month, 1);
@@ -26,17 +26,20 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({ view, currentDate, onDateCl
       days.push(day);
     }
     return days;
-  };
+  }, []);
 
-  const getWeekDays = (date: Date) => {
+  const getWeekDays = useCallback((date: Date) => {
     const start = startOfWeek(date);
     const end = endOfWeek(date);
     return eachDayOfInterval({ start, end });
-  };
+  }, []);
 
-  const days = getDaysInMonth(currentDate);
-  const weekDays = getWeekDays(currentDate);
-  const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const days = useMemo(() => getDaysInMonth(currentDate), [currentDate, getDaysInMonth]);
+  const weekDays = useMemo(() => getWeekDays(currentDate), [currentDate, getWeekDays]);
+  const weekdays = useMemo(() => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], []);
+  const today = useMemo(() => new Date(), []);
+
+  const hourArray = useMemo(() => Array.from({ length: 24 }, (_, i) => i), []);
 
   if (view === 'month') {
     return (
@@ -54,11 +57,11 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({ view, currentDate, onDateCl
         <div className="grid grid-cols-7 gap-1 sm:gap-2">
           {days.map((day, index) => {
             const isCurrentMonth = day.getMonth() === currentDate.getMonth();
-            const isToday = day.toDateString() === new Date().toDateString();
+            const isToday = day.toDateString() === today.toDateString();
 
             return (
               <CalendarDay
-                key={index}
+                key={`${day.getTime()}-${index}`}
                 date={day}
                 isCurrentMonth={isCurrentMonth}
                 isToday={isToday}
@@ -85,7 +88,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({ view, currentDate, onDateCl
                 {format(day, 'EEE')}
               </div>
               <div className={`text-lg font-semibold mt-1 ${
-                day.toDateString() === new Date().toDateString() 
+                day.toDateString() === today.toDateString() 
                   ? 'text-sage' 
                   : 'text-neutral-700'
               }`}>
@@ -94,7 +97,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({ view, currentDate, onDateCl
             </div>
           ))}
           
-          {Array.from({ length: 24 }, (_, hour) => (
+          {hourArray.map((hour) => (
             <React.Fragment key={hour}>
               <div className="p-2 text-xs text-neutral-500 text-right border-r border-neutral-100">
                 {format(new Date().setHours(hour, 0, 0, 0), 'ha')}
@@ -123,7 +126,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({ view, currentDate, onDateCl
         
         <div className="grid grid-cols-2 gap-1">
           <div className="space-y-1">
-            {Array.from({ length: 24 }, (_, hour) => (
+            {hourArray.map((hour) => (
               <div key={hour} className="flex items-center">
                 <div className="w-12 sm:w-16 text-xs text-neutral-500 text-right pr-2 sm:pr-4">
                   {format(new Date().setHours(hour, 0, 0, 0), 'ha')}
@@ -144,7 +147,9 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({ view, currentDate, onDateCl
       </div>
     </div>
   );
-};
+});
+
+CalendarGrid.displayName = 'CalendarGrid';
 
 interface CalendarDayProps {
   date: Date;
@@ -154,7 +159,7 @@ interface CalendarDayProps {
   onContentDrop?: (content: any) => void;
 }
 
-const CalendarDay: React.FC<CalendarDayProps> = ({ date, isCurrentMonth, isToday, onDateClick, onContentDrop }) => {
+const CalendarDay = memo<CalendarDayProps>(({ date, isCurrentMonth, isToday, onDateClick, onContentDrop }) => {
   const [{ isOver }, drop] = useDrop({
     accept: 'content',
     drop: (item) => {
@@ -167,16 +172,24 @@ const CalendarDay: React.FC<CalendarDayProps> = ({ date, isCurrentMonth, isToday
     }),
   });
 
-  const sampleContent = date.getDate() % 7 === 0 && isCurrentMonth ? {
-    title: 'Blog Post',
-    type: 'blog',
-    time: '2:00 PM',
-  } : null;
+  const handleDateClick = useCallback(() => {
+    if (onDateClick) {
+      onDateClick(date);
+    }
+  }, [onDateClick, date]);
+
+  const sampleContent = useMemo(() => {
+    return date.getDate() % 7 === 0 && isCurrentMonth ? {
+      title: 'Blog Post',
+      type: 'blog',
+      time: '2:00 PM',
+    } : null;
+  }, [date, isCurrentMonth]);
 
   return (
     <div
       ref={drop}
-      onClick={() => onDateClick && onDateClick(date)}
+      onClick={handleDateClick}
       className={`min-h-[80px] sm:min-h-[120px] p-2 sm:p-3 border border-neutral-100 transition-all duration-200 ${
         isCurrentMonth ? 'bg-white' : 'bg-neutral-50'
       } ${
@@ -203,6 +216,8 @@ const CalendarDay: React.FC<CalendarDayProps> = ({ date, isCurrentMonth, isToday
       )}
     </div>
   );
-};
+});
+
+CalendarDay.displayName = 'CalendarDay';
 
 export default CalendarGrid;
